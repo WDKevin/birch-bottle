@@ -67,11 +67,8 @@
           $trigger = $text[0];
           
           $params = str_replace($trigger.' ', '', $user_text);
-
-          // Sample Trigger
-          if (substr($trigger, 0, 4) == '.hello') {
-            fn_say($socket, $channel, 'Hello '.$params.'!');
-          }
+          
+          require_once('triggers.php');
         }
       }
     }
