@@ -1,6 +1,6 @@
 <?php
-  $server = "irc.freenode.net";
+  $server = "";
   $port = 6667;
-  $nick = "cryptbinbot";
-  $channel = '#cryptbin';
-  $bot_owner = 'wdkevin';
+  $nick = "";
+  $channel = "";
+  $bot_owner = "";
