@@ -7,13 +7,14 @@ class Bot
     protected $port;
     protected $bot_nick;
     protected $channels;
+    protected $blocked_responses;
 
     /**
      * @var resource
      */
     protected $socket;
 
-    public function __construct($hostname, $port = 6667, $nick = 'BirchBottle', $channels = array())
+    public function __construct($hostname, $port = 6667, $blocked_responses, $nick = 'BirchBottle', $channels = array())
     {
         // TODO lrobert: We should be enforcing a channel array rather than trying to force it as a single channel
         if (is_array($channels) && count($channels) > 0) {
@@ -24,6 +25,7 @@ class Bot
         $this->port = $port;
         $this->bot_nick = $nick;
         $this->channels = $channels;
+        $this->blocked_responses = $blocked_responses;
     }
 
     /**
@@ -98,7 +100,9 @@ class Bot
                     $data = str_replace('<br />', '', $data);
 
                     // Echo response to log, screen, web browser, etc.
-                    echo $data;
+                    if (!in_array(substr($data, 0, 3), $this->blocked_responses)) {
+                        echo $data;
+                    }
                     flush();
 
                     // Check for ping backs

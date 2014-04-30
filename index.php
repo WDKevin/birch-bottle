@@ -11,7 +11,7 @@ set_time_limit(0);
 // Include config options
 $config = require_once('config.php');
 
-$bot = new BirchBottle\Bot($config['server'], $config['port'], $config['nick'], $config['channel']);
+$bot = new BirchBottle\Bot($config['server'], $config['port'], $config['blocked_responses'], $config['nick'], $config['channel']);
 
 
 $bot->run();
