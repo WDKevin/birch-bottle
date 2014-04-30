@@ -57,26 +57,16 @@
       // Checks to make sure we are analyzing channel activity only
       if (strpos($data, $channel) !== false) {
         // Parse the response to get the users text
-        $data = explode(':', $data);
+        $start = strpos($data, "PRIVMSG $channel :");
+        $count = strlen("PRIVMSG $channel :");
+        $text = substr($data, $start + $count);
 
-        if (isset($data[2])) {
-          // Set the users text
-          $user_text = $data[2];
-    
-          if (isset($data[3])) {
-            $url = $data[3];
-          }
-          
+        if (isset($text)) {
           // Get users nick
           $nick = explode('!', $data[1]);
           $nick = $nick[0];
-                    
-          $text = explode(' ', $user_text);
-          $text = $text[0];
-          
-          $params = str_replace($trigger.' ', '', $user_text);
 
-          require_once('triggers.php');
+          include 'triggers.php';
         }
       }
     }
@@ -114,7 +104,6 @@
   }
   
   function fn_get_page_title($url){
-    $url = 'http://'.$url;
     $string = file_get_contents($url);
     if (strlen($string) > 0) {
       preg_match("/\<title\>(.*)\<\/title\>/", $string, $title);
