@@ -79,35 +79,3 @@
       fputs($socket, "PRIVMSG $channel :$message\n");
     }
   }
-  
-  function fn_get_reddit_posts($subreddit, $sort, $limit = 5) {
-    $string_reddit = file_get_contents("http://reddit.com/r/$subreddit/$sort.json");
-    $json = json_decode($string_reddit, true);  
-
-    $children = $json['data']['children'];
-    
-    $count = 0;
-    
-    foreach ($children as $child) {
-      if ($count == $limit) {
-        break;
-      }
-      $title = $child['data']['title'];
-      $url = "http://reddit.com".$child['data']['permalink'];
-      $score = $child['data']['score'];
-      $ups = $child['data']['ups'];
-      $downs = $child['data']['downs'];
-      $result[$count] = "$score ($ups/$downs) $title - $url";
-      $count++;
-    }
-    return $result;
-  }
-  
-  function fn_get_page_title($url){
-    $string = file_get_contents($url);
-    if (strlen($string) > 0) {
-      preg_match("/\<title\>(.*)\<\/title\>/", $string, $title);
-      $title = $title[1];
-      return 'Title: '.$title;
-    }
-  }
