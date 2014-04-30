@@ -1,0 +1,18 @@
+{
+    "name"       : "wdkevin/birch-bottle",
+    "description": "PHP IRC Bot",
+    "authors"    : [
+        {
+            "name" : "Kevin Crider",
+            "email": "kevin.crider@texvisions.com"
+        }
+    ],
+    "require"    : {
+
+    },
+    "autoload"   : {
+        "psr-4": {
+            "BirchBottle\\": "src/BirchBottle/"
+        }
+    }
+}
