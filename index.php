@@ -35,7 +35,9 @@
       $data = str_replace('<br />', '', $data);
 
       // Echo response to log, screen, web browser, etc.
-      echo $data;
+      if (!in_array(substr($data, 0, 3), $blocked_responses)) {
+        echo $data;
+      }
       flush();
 
       // Check for pingbacks
