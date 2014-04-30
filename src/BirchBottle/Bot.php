@@ -21,10 +21,10 @@ class Bot
             $channels = array_shift($channels);
         }
 
-        $this->hostname = $hostname;
-        $this->port = $port;
-        $this->bot_nick = $nick;
-        $this->channels = $channels;
+        $this->hostname          = $hostname;
+        $this->port              = $port;
+        $this->bot_nick          = $nick;
+        $this->channels          = $channels;
         $this->blocked_responses = $blocked_responses;
     }
 
@@ -46,14 +46,14 @@ class Bot
 
             // Set user info
             // TODO lrobert: Set proper user info
-            fputs($this->socket, sprintf('USER %1$s %1$s %1$s %1$s :%1$s\n', $this->bot_nick));
+            $this->sendCommand(sprintf('USER %1$s %1$s %1$s %1$s :%1$s', $this->bot_nick));
 
             // Set nick
-            fputs($this->socket, sprintf('NICK %1$s\n', $this->bot_nick));
+            $this->sendCommand(sprintf('NICK %1$s', $this->bot_nick));
 
             // Join channel(s)
             // TODO: convert channels to actually be an array
-            fputs($this->socket, sprintf('JOIN %1$s\n', $this->channels));
+            $this->sendCommand(sprintf('JOIN %1$s', $this->channels));
         }
 
         return $this->socket;
@@ -110,14 +110,14 @@ class Bot
 
                     // Answer ping requests from the server
                     if ($ping[0] == "PING") {
-                        fputs($socket, sprintf('PONG %1$s\n', $ping[1]));
+                        $this->sendCommand(sprintf('PONG %1$s', $ping[1]));
                         break;
                     }
 
                     // Auto-rejoin channel on kick
                     if (strpos($data, sprintf('KICK %1$s %2$s', $this->channels, $this->bot_nick)) !== false) {
                         echo sprintf('CHANNEL ACTION: Kicked from %1$s' . PHP_EOL, $this->channels);
-                        fputs($socket, sprintf('JOIN %1$s\n', $this->channels));
+                        $this->sendCommand(sprintf('JOIN %1$s', $this->channels));
                         break;
                     }
 
@@ -126,7 +126,7 @@ class Bot
                         // Parse the response to get the users text
                         $start = strpos($data, sprintf('PRIVMSG %1$s :', $this->channels));
                         $count = strlen(sprintf('PRIVMSG %1$s :', $this->channels));
-                        $text = substr($data, $start + $count);
+                        $text  = substr($data, $start + $count);
 
 
                         if (isset($text)) {
@@ -147,19 +147,30 @@ class Bot
         $this->disconnect();
     }
 
+    public function sendCommand($command)
+    {
+        // TODO lrobert: The socket needs to be handled better
+        if (isset($this->socket)) {
+            fputs($this->socket, $command . "\r\n");
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Sends a message
-     * @param $socket
-     * @param $channel
-     * @param $message
+     *
+     * @param      $socket
+     * @param      $channel
+     * @param      $message
      * @param null $nick
      */
     function fn_say($socket, $channel, $message, $nick = null)
     {
         if (isset($nick)) {
-            fputs($socket, sprintf('PRIVMSG %1$s :%2$s: %3$s\n', $channel, $nick, $message));
+            $this->sendCommand(sprintf('PRIVMSG %1$s :%2$s: %3$s', $channel, $nick, $message));
         } else {
-            fputs($socket, sprintf('PRIVMSG %1$s :%2$s\n', $channel, $message));
+            $this->sendCommand(sprintf('PRIVMSG %1$s :%2$s', $channel, $message));
         }
     }
 }
