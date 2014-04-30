@@ -1,4 +1,4 @@
-<?
+<?php
   // Sample Trigger - Basic trigger
   $trigger = '!hello';
   if (substr($text, 0, strlen($trigger)) == $trigger) {
