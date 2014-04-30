@@ -9,10 +9,10 @@
   $socket = fsockopen($server, $port);
   
   // Set user info
-  fputs($socket,"USER $nick $nick $nick $nick :$nick\n");
+  fputs($socket,"USER $bot_nick $bot_nick $bot_nick $bot_nick :$bot_nick\n");
   
   // Set nick
-  fputs($socket,"NICK $nick\n");
+  fputs($socket,"NICK $bot_nick\n");
   
   // Join channel(s)
   fputs($socket, "JOIN ".$channel."\n");
@@ -30,20 +30,28 @@
       // Strip server from string
       $data = str_replace(':'.$server, '', $data);
     
-      // Echo response to log, screen, web browser, etc.
+      // Strip line break HTML off the end of the response
       $data = nl2br($data);
+      $data = str_replace('<br />', '', $data);
+
+      // Echo response to log, screen, web browser, etc.
       echo $data;
       flush();
 
-      // Strip line break HTML off the end of the response
-      $data = str_replace('<br />', '', $data);
-    
       // Check for pingbacks
       $ping = explode(' ', $data);
 
       // Answer ping requests from the server
       if ($ping[0] == "PING"){
         fputs($socket, "PONG ".$ping[1]."\n");
+        break;
+      }
+
+      // Auto-rejoin channel on kick
+      if (strpos($data, "KICK $channel $bot_nick") !== false) {
+        echo "CHANNEL ACTION: Kicked from $channel\r\n";
+        fputs($socket, "JOIN ".$channel."\n");
+        break;
       }
 
       // Checks to make sure we are analyzing channel activity only
@@ -64,10 +72,10 @@
           $nick = $nick[0];
                     
           $text = explode(' ', $user_text);
-          $trigger = $text[0];
+          $text = $text[0];
           
           $params = str_replace($trigger.' ', '', $user_text);
-          
+
           require_once('triggers.php');
         }
       }
@@ -99,7 +107,7 @@
       $score = $child['data']['score'];
       $ups = $child['data']['ups'];
       $downs = $child['data']['downs'];
-      $result[$count] = "$score ($ups/$downs) $title - $url<br>";
+      $result[$count] = "$score ($ups/$downs) $title - $url";
       $count++;
     }
     return $result;
@@ -111,8 +119,6 @@
     if (strlen($string) > 0) {
       preg_match("/\<title\>(.*)\<\/title\>/", $string, $title);
       $title = $title[1];
-      return 'Title: '.$title.' | URL: '.$url;
+      return 'Title: '.$title;
     }
   }
-  
-  ?>

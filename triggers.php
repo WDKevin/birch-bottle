@@ -1,5 +1,6 @@
 <?
-  // Sample Trigger
-  if (substr($trigger, 0, 6) == '.hello') {
+  // Sample Trigger - Basic trigger
+  $trigger = '.hello';
+  if (substr($text, 0, strlen($trigger)) == $trigger) {
     fn_say($socket, $channel, 'Hello '.$params.'!');
   }

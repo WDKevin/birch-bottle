@@ -1,6 +1,6 @@
 <?php
   $server = "";
   $port = 6667;
-  $nick = "";
+  $bot_nick = "";
   $channel = "";
   $bot_owner = "";
